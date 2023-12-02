@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WordCounter": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\InputFiles"
+    }
+  }
+}
