@@ -59,7 +59,6 @@ namespace WordCounter.DataAccess
                     {
                         var cleanWord = Regex.Replace(word, _onlyLettersRegex, string.Empty).ToLower();
                         if (string.IsNullOrEmpty(cleanWord)) { continue; }
-                        var exists = _wordCounts.ContainsKey(cleanWord);
                         _wordCounts.AddOrUpdate(cleanWord, 1, (key, oldValue) => oldValue + 1);
                     }
                 }
