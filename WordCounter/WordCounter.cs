@@ -1,4 +1,6 @@
 ﻿using System.Collections.Concurrent;
+using System.IO;
+using System.Text.RegularExpressions;
 using WordCounter.DataAccess;
 
 namespace WordCounter
@@ -8,23 +10,40 @@ namespace WordCounter
         private IDataAccess DataAccess { get; }
         private IDictionary<string, int> WordCount { get; set; }
         private IEnumerable<string> Excluded { get; set; }
-        
+
+        private const string _onlyLettersRegex = "[^a-zA-z]+";
+        private const char _seperator = ' ';
+
         public WordCounter(IDataAccess dataAccess) {
             DataAccess = dataAccess;
             WordCount = new Dictionary<string, int>();
             Excluded = new List<string>();
         }
 
-        public async Task CountWords()
+        public async Task ProcessData()
         {
             Excluded = await DataAccess.GetExcludedWords();
-            await ReadWords();
+            await CountWords();
             await PersistWords();
         }
 
-        private async Task ReadWords()
+        private async Task CountWords()
         {
-            WordCount = await DataAccess.ReadLines();
+            var wordCountResult = new ConcurrentDictionary<string, int>();
+            var inputSources = DataAccess.GetInputSources();
+            await Parallel.ForEachAsync(inputSources, async (inputSource, cancellationToken) =>
+            {
+                await foreach (var line in DataAccess.ReadLines(inputSource)) {
+                    var words = line.Split(_seperator);
+                    foreach (var word in words)
+                    {
+                        var cleanWord = Regex.Replace(word, _onlyLettersRegex, string.Empty).ToLower();
+                        if (string.IsNullOrEmpty(cleanWord)) { continue; }
+                        wordCountResult.AddOrUpdate(cleanWord, 1, (key, oldValue) => oldValue + 1);
+                    }
+                }
+            });
+            WordCount = wordCountResult;
         }
 
         private async Task PersistWords()

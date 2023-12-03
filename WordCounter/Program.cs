@@ -10,7 +10,7 @@ switch (args.Length)
         var outputFolder = Path.Combine(args[0], "output");
         IDataAccess dataAccess = new FileDataAccess(args[0], outputFolder, Path.Combine(args[0], "excluded.txt"));
         var wordCounter = new WordCounter.WordCounter(dataAccess);
-        await wordCounter.CountWords();
+        await wordCounter.ProcessData();
         break;
     default:
         Console.WriteLine("Too many command line arguments");
