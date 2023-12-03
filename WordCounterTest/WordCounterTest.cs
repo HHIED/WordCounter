@@ -12,6 +12,7 @@ namespace WordCounterTest
         [TestCase("foo bar foobar barfoo", "", 1, 1, 1, 1)]
         [TestCase("foo! bar?, foobar. barfoo", "", 1, 1, 1, 1)]
         [TestCase("foo bar foobar barfoo", "foo bar foo bar", 3, 3, 1, 1)]
+        [TestCase("foo bar foobar barfoo", "fOO bAr Foo bAR", 3, 3, 1, 1)]
         public async Task TestCorrectCount(string line1, string line2, int? fooCount, int? barCount, int? fooBarCount, int? barFooCount)
         {
             //Arrange
