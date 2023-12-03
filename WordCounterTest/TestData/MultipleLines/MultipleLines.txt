@@ -1,3 +1,0 @@
-foo bar foobar
-bar foobar bar foo
-foobar foobar barfoo
